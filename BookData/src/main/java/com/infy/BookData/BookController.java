@@ -32,17 +32,17 @@ public class BookController {
 
 	}
 
-	// Api for getting all book
+	// Api for getting all books
 	@GetMapping("/books")
 	public ResponseEntity<?> getAllBookApi() {
 		try {
-			if (bookService.getAllBook().isEmpty()) {
+			if (bookService.getAllBook().isEmpty() || bookService.getAllBook().contains(null)) {
 				throw new BookDataException("No book data available");
 			}
 			return new ResponseEntity<>(bookService.getAllBook(), HttpStatus.OK);
 		} catch (BookDataException e) {
 			e.printStackTrace();
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -50,6 +50,9 @@ public class BookController {
 	@GetMapping("/books/{id}")
 	public ResponseEntity<?> getBookByIdApi(@PathVariable("id") String bookId) {
 		try {
+			if (bookService.getAllBook().isEmpty() || bookService.getAllBook().contains(null)) {
+				throw new BookDataException("No book data available");
+			}
 			if (bookId.isBlank() || Integer.parseInt(bookId) <= 0) {
 				throw new BookDataException("Book id can not be null or 0 or Negetive");
 			}
@@ -68,11 +71,14 @@ public class BookController {
 	@PutMapping("books/{id}")
 	public ResponseEntity<Object> updateBookApi(@PathVariable("id") String id, @RequestBody BookEntity book) {
 		try {
+			if (bookService.getAllBook().isEmpty() || bookService.getAllBook().contains(null)) {
+				throw new BookDataException("No book data available");
+			}
 			if (id.isBlank() || Integer.parseInt(id) <= 0) {
 				throw new BookDataException("Book id can not be null or 0 or Negetive");
 			}
 			return new ResponseEntity<>(bookService.updateBook(Integer.parseInt(id), book), HttpStatus.FOUND);
-		} catch (Exception e) {
+		} catch (BookDataException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
@@ -80,9 +86,9 @@ public class BookController {
 
 	// Delete all books
 	@DeleteMapping("/books")
-	public ResponseEntity<?> deleteAllBookApi() {
+	public ResponseEntity<Object> deleteAllBookApi() {
 		try {
-			if (bookService.getAllBook().isEmpty()) {
+			if (bookService.getAllBook().isEmpty() || bookService.getAllBook().contains(null)) {
 				throw new BookDataException("No book data available");
 			}
 			return new ResponseEntity<>(bookService.deleteAllBooks(), HttpStatus.OK);
@@ -96,11 +102,14 @@ public class BookController {
 	@DeleteMapping("/books/{id}")
 	public ResponseEntity<Object> deleteBookApi(@PathVariable("id") String bookId) {
 		try {
+			if (bookService.getAllBook().isEmpty() || bookService.getAllBook().contains(null)) {
+				throw new BookDataException("No book data available");
+			}
 			if (bookId.isBlank() || Integer.parseInt(bookId) <= 0) {
 				throw new BookDataException("Book id can not be null or 0 or Negetive");
 			}
 			return new ResponseEntity<>(bookService.deleteBook(Integer.parseInt(bookId)), HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (BookDataException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
